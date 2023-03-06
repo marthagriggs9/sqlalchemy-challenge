@@ -56,9 +56,8 @@ def welcome():
 @app.route("/api/v1.0/precipitation")
 
 def precipitation():
-   prev_year = dt.date(2017, 8, 23) - dt.timedelta(days=365)
    precipitation = session.query(measurement.date, measurement.prcp).\
-    filter(measurement.date >= prev_year).all()
+    filter(measurement.date >= '2016-08-23').all()
    precip = {date: prcp for date, prcp in precipitation}
    return jsonify(precip)
 
@@ -74,10 +73,9 @@ def stations():
 @app.route("/api/v1.0/tobs")
 
 def temp_monthly():
-    prev_year = dt.date(2017, 8, 23) - dt.timedelta(days=365)
     results = session.query(measurement.tobs).\
       filter(measurement.station == 'USC00519281').\
-      filter(measurement.date >= prev_year).all()
+      filter(measurement.date.between('2016-08-23', '2017-0823')).all()
     temps = list(np.ravel(results))
     return jsonify(temps=temps)
 
@@ -87,10 +85,6 @@ def temp_monthly():
 
 def stats(start=None, end=None):
     sel = [func.min(measurement.tobs), func.avg(measurement.tobs), func.max(measurement.tobs)]
-    print ("=============")
-    print (start)
-    print (end)
-    print ("=============")
     
     if not end:
         results = session.query(*sel).\
