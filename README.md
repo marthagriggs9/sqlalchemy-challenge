@@ -235,7 +235,9 @@ def stats(start=None, end=None):
     return jsonify(temps)
 ```
 Sample output with the start date '2015-11-05' entered:
+
 ![image](https://user-images.githubusercontent.com/115905663/223178573-6bdbf00d-2035-49ae-bbb8-d98e1d800000.png)
 
 Sample output with the start date of '2015-11-05' and end date of '2016-11-05' entered:
+
 ![image](https://user-images.githubusercontent.com/115905663/223178898-64c96079-3909-4470-8927-35b225a223eb.png)
