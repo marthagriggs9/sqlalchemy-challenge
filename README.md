@@ -38,13 +38,14 @@ session = Session(engine)
 #### Station Analysis
 1. Design a query to calculate the total number of stations in the dataset. 
 2. Design a query to find the most-active stations (that is, the stations that have the most rows).
-   - List tje stations and observation counts in descending order.
+   - List the stations and observation counts in descending order.
    - Find the station id with the greatest number of observations. 
-3. Design a query to get the previous 12 months of temperature observation (TOBS) data.
+3. Design a query that calculates the lowest, highest and average temperatures that filters on the most-active station id found in the previous query. 
+4. Design a query to get the previous 12 months of temperature observation (TOBS) data.
    - Filter by the station that has the greatest number of observations. 
    - Query the previous 12 months of TOBS data for that station. 
    - Plot the results as a histogram with `bins=12`
-4. Close your session. 
+5. Close your session. 
 
 
 ## Design Your Climate App
