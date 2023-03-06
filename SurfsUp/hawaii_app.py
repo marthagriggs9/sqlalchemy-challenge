@@ -56,10 +56,13 @@ def welcome():
 @app.route("/api/v1.0/precipitation")
 
 def precipitation():
-   precipitation = session.query(measurement.date, measurement.prcp).\
-    filter(measurement.date >= '2016-08-23').all()
-   precip = {date: prcp for date, prcp in precipitation}
-   return jsonify(precip)
+    last_date_row = session.query(measurement.date).order_by(measurement.date.desc()).first()
+    last_date = dt.date.fromisoformat(last_date_row[0])
+    query_date = last_date - dt.timedelta(days=365)
+    precipitation = session.query(measurement.date, measurement.prcp).\
+        filter(measurement.date >= query_date).all()
+    precip = {date: prcp for date, prcp in precipitation}
+    return jsonify(precip)
 
 # STATIONS ROUTE
 @app.route("/api/v1.0/stations")
@@ -73,9 +76,12 @@ def stations():
 @app.route("/api/v1.0/tobs")
 
 def temp_monthly():
+    last_date_row = session.query(measurement.date).order_by(measurement.date.desc()).first()
+    last_date = dt.date.fromisoformat(last_date_row[0])
+    query_date = last_date - dt.timedelta(days=365)
     results = session.query(measurement.tobs).\
-      filter(measurement.station == 'USC00519281').\
-      filter(measurement.date.between('2016-08-23', '2017-0823')).all()
+        filter(measurement.station == 'USC00519281').\
+        filter(measurement.date >= query_date).all()
     temps = list(np.ravel(results))
     return jsonify(temps=temps)
 
