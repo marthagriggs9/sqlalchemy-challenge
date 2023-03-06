@@ -4,8 +4,9 @@
 Congratulations! You've decided to treat yourself to a long holiday vacation in Honolulu, Hawaii. To help with your trip planning, you decide to do a climate analysis
 about the area. The following sections outline the steps you need to take to accomplish the task. 
 
-## Analyze and Explore Climate Data
-
+## Analyze and Explore Climate Data 
+Files [^1].
+[^1]: The file named [climate_starter.ipynb](https://github.com/marthagriggs9/sqlalchemy-challenge/blob/main/SurfsUp/climate_starter.ipynb) contains the code used for the Precipitation and Stations Analysis. The file name [hawaii.app.py](https://github.com/marthagriggs9/sqlalchemy-challenge/blob/main/SurfsUp/hawaii_app.py) contains the code used for the API Landing Page. 
 #### Reflect Tables into SQLAlchemy ORM
 To connect to the SQLite database, the SQLAlchemy function `create_engine()` was used. 
 ```ruby
