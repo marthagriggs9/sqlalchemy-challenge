@@ -165,6 +165,7 @@ def welcome():
     f"/api/v1.0/temp/start/end<br/>"
     )
 ```
+![image](https://user-images.githubusercontent.com/115905663/223177538-193ec4a1-d452-43ed-b17d-a36ddd4715d3.png)
     
 2. `/api/v1.0/precipitation`
    - Convert the query results from the precipitation analysis (i.e. retrieve only the last 12 months of data) to a dictionary using `date` as the key and `prcp`
@@ -179,6 +180,7 @@ def precipitation():
    precip = {date: prcp for date, prcp in precipitation}
    return jsonify(precip)
 ```
+![image](https://user-images.githubusercontent.com/115905663/223177776-ccbed671-10fe-444e-aef4-2a94ed70090e.png)
 
 3. `/api/v1.0/stations`
    - Return a JSON list of stations from the dataset. 
@@ -190,6 +192,7 @@ def stations():
     stations = list(np.ravel(results))
     return jsonify(stations=stations)
 ```
+![image](https://user-images.githubusercontent.com/115905663/223177965-829b22e7-70be-461e-9ed4-188cb3aeca32.png)
 
 4. `/api/v1.0/tobs`
    - Query the dates and temperature observations of the most-active station for the previous year of data. 
@@ -204,6 +207,7 @@ def temp_monthly():
     temps = list(np.ravel(results))
     return jsonify(temps=temps)
 ```
+![image](https://user-images.githubusercontent.com/115905663/223178182-4b39549d-6633-4242-80bc-3004097c8150.png)
 
 5. `/api/v1.0/<start>` and `/api/v1.0/<start>/<end>`
    - Return a JSON list of the minimum temperature, the average temperature and the maximum temperature for a specified start or start-end range.
@@ -230,3 +234,8 @@ def stats(start=None, end=None):
     session.close()
     return jsonify(temps)
 ```
+Sample output with the start date '2015-11-05' entered:
+![image](https://user-images.githubusercontent.com/115905663/223178573-6bdbf00d-2035-49ae-bbb8-d98e1d800000.png)
+
+Sample output with the start date of '2015-11-05' and end date of '2016-11-05' entered:
+![image](https://user-images.githubusercontent.com/115905663/223178898-64c96079-3909-4470-8927-35b225a223eb.png)
