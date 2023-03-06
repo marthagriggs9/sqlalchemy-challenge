@@ -27,16 +27,52 @@ session = Session(engine)
 ```
 
 #### Precipitation Analysis
-1. Find the most recent date in the datatset.
+1. Find the most recent date in the datatset. 
+```ruby
+session.query(measurement.date).order_by(measurement.date.desc()).first()
+```
 2. Using that date, get the previous 12 months of preceipitation data by querying the previous 12 months of data (without using the date as a variable).
-3. Select only the 'date' and 'prcp' values.
-4. Load the query results into a Pandas DataFrame and set the index to the 'date' column. 
-5. Sort the DataFrame values by 'date'. 
-6. Plot the results using the DataFram plot method.
-7. Use Pandas to print the sumamry statistics for the precipitation data. 
+   - Select only the 'date' and 'prcp' values.
+```ruby
+precipitation_query = []
+precipitation_query = session.query(measurement.date, measurement.prcp).filter(measurement.date >= '2016-08-23').all()
+```
+3. Load the query results into a Pandas DataFrame and set the index to the 'date' column. 
+   - Sort the DataFrame values by 'date'. 
+```ruby
+df = pd.DataFrame(precipitation_query, columns=['date', 'precipitation'])
+df.set_index(df['date'], inplace=True)
+print(df)
+df= df.sort_index()
+#Drop the null values from the DataFrame
+precipitation_df = df.dropna()
+print(precipitation_df)
+```
+4. Plot the results using the DataFram plot method.
+```ruby
+plt.figure(figsize= (11.5, 8))
+plt.bar(precipitation_df['date'], precipitation_df['precipitation'], color='midnightblue', label= "Precipitation", width=2.5)
+plt.xticks(precipitation_df['date'], rotation=90, fontsize= 18)
+plt.yticks(np.arange(0, 7.5, 1), fontsize = 18)
+ax = plt.gca()
+ax.xaxis.set_major_locator(mdates.MonthLocator(interval=2))
+#plt.gcf().autofmt_xdate()
+plt.xlim()
+plt.xlabel("Date", fontsize= 18, fontweight= 'bold')
+plt.ylabel("Precipitation (Inches)", fontsize = 18, fontweight = 'bold')
+plt.legend(fontsize=18, loc="upper right")
+```
+![image](https://user-images.githubusercontent.com/115905663/223168077-36144a97-b170-476c-9b3c-91abc51434f8.png)
+
+5. Use Pandas to print the sumamry statistics for the precipitation data. 
+```ruby
+precipitation_df.describe()
+``` 
+![image](https://user-images.githubusercontent.com/115905663/223168507-3236ac6f-ee71-4e67-9764-0cf874f36c8d.png)
 
 #### Station Analysis
 1. Design a query to calculate the total number of stations in the dataset. 
+
 2. Design a query to find the most-active stations (that is, the stations that have the most rows).
    - List the stations and observation counts in descending order.
    - Find the station id with the greatest number of observations. 
