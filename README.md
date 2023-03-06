@@ -122,19 +122,111 @@ Now that the initial analysis is complete, design a Flask API based on the queri
 Flask was used to create routes
 
 Python file: [hawaii_app.py](https://github.com/marthagriggs9/sqlalchemy-challenge/blob/main/SurfsUp/hawaii_app.py) contains the code used for the API Landing Page.
+
+###### Database Setup
+```ruby
+engine = create_engine("sqlite:///../Resources/hawaii.sqlite")
+
+# reflect an existing database into a new model
+Base = automap_base()
+
+# reflect the tables
+Base.prepare(autoload_with=engine)
+
+# Save reference to the tables
+measurement = Base.classes.measurement
+station = Base.classes.station
+
+# Create our session (link) from Python to the Database
+session = Session(engine)
+
+#################################################
+# Flask Setup
+#################################################
+app = Flask(__name__)
+```
+###### Flasy Routes
+
 1. `/` 
    - Start at the homepage.
    - List all the available routes.
+```ruby
+@app.route("/")
+
+# Create function for welcome page
+def welcome():
+    return(
+    
+    f"Welcome to the Climate Analysis API!<br/>"
+    f"Available Routes:<br/>"
+    f"/api/v1.0/precipitation<br/>"
+    f"/api/v1.0/stations<br/>"
+    f"/api/v1.0/tobs<br/>"
+    f"/api/v1.0/temp/start/end<br/>"
+    )
+```
+    
 2. `/api/v1.0/precipitation`
    - Convert the query results from the precipitation analysis (i.e. retrieve only the last 12 months of data) to a dictionary using `date` as the key and `prcp`
 as the value. 
    - Return the JSON representation of your dictionary. 
+```ruby
+@app.route("/api/v1.0/precipitation")
+
+def precipitation():
+   precipitation = session.query(measurement.date, measurement.prcp).\
+    filter(measurement.date >= '2016-08-23').all()
+   precip = {date: prcp for date, prcp in precipitation}
+   return jsonify(precip)
+```
+
 3. `/api/v1.0/stations`
    - Return a JSON list of stations from the dataset. 
+```ruby
+@app.route("/api/v1.0/stations")
+
+def stations():
+    results = session.query(station.station).all()
+    stations = list(np.ravel(results))
+    return jsonify(stations=stations)
+```
+
 4. `/api/v1.0/tobs`
    - Query the dates and temperature observations of the most-active station for the previous year of data. 
    - Return a JSON list of temperature observation for the previous year. 
+```ruby
+@app.route("/api/v1.0/tobs")
+
+def temp_monthly():
+    results = session.query(measurement.tobs).\
+      filter(measurement.station == 'USC00519281').\
+      filter(measurement.date.between('2016-08-23', '2017-0823')).all()
+    temps = list(np.ravel(results))
+    return jsonify(temps=temps)
+```
+
 5. `/api/v1.0/<start>` and `/api/v1.0/<start>/<end>`
    - Return a JSON list of the minimum temperature, the average temperature and the maximum temperature for a specified start or start-end range.
    - For a specified start, calculate `TMIN`, `TAVG`, and `TMAX` for all the dates greater than or equal to the start date. 
    - For a specified start date and end date, calculate `TMIN`, `TAVG`, and `TMAX` for the dates from the start date to the end date, inclusive.
+```ruby
+@app.route("/api/v1.0/temp/<start>")
+@app.route("/api/v1.0/temp/<start>/<end>")
+
+def stats(start=None, end=None):
+    sel = [func.min(measurement.tobs), func.avg(measurement.tobs), func.max(measurement.tobs)]
+    
+    if not end:
+        results = session.query(*sel).\
+            filter(measurement.date >= start).all()
+        temps = list(np.ravel(results))
+        session.close()
+        return jsonify(temps)
+
+    results = session.query(*sel).\
+        filter(measurement.date >= start).\
+        filter(measurement.date <= end).all()
+    temps = list(np.ravel(results))
+    session.close()
+    return jsonify(temps)
+```
