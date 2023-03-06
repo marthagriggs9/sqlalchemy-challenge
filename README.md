@@ -72,17 +72,47 @@ precipitation_df.describe()
 
 #### Station Analysis
 1. Design a query to calculate the total number of stations in the dataset. 
+```ruby
+station_count = session.query(station).distinct().count()
+print(station_count)
+```
 
 2. Design a query to find the most-active stations (that is, the stations that have the most rows).
    - List the stations and observation counts in descending order.
    - Find the station id with the greatest number of observations. 
+```ruby
+session.query(measurement.station, func.count(measurement.station)).\
+group_by(measurement.station).order_by(func.count(measurement.station).desc()).all()
+```
+
 3. Design a query that calculates the lowest, highest and average temperatures that filters on the most-active station id found in the previous query. 
+```ruby
+session.query(func.min(measurement.tobs), func.max(measurement.tobs), func.avg(measurement.tobs)).\
+filter(measurement.station == 'USC00519281').all()
+```
+
 4. Design a query to get the previous 12 months of temperature observation (TOBS) data.
    - Filter by the station that has the greatest number of observations. 
    - Query the previous 12 months of TOBS data for that station. 
    - Plot the results as a histogram with `bins=12`
-5. Close your session. 
+```ruby
+temperature_results = session.query(measurement.tobs).\
+filter(measurement.station == 'USC00519281').\
+filter(measurement.date.between('2016-08-23', '2017-0823')).all()
+#Save results to a dataframe that will be used to make the histogram
+temperature_df = pd.DataFrame(temperature_results, columns=['tobs'])
+print(temperature_df)
+```
+```ruby
+temperature_df.plot.hist(bins=12)
+plt.xlabel('Temperature')
+```
+![image](https://user-images.githubusercontent.com/115905663/223169483-a7bf24da-eab1-48e3-ba07-c59cc69c64c8.png)
 
+5. Close your session. 
+```ruby
+session.close()
+```
 
 ## Design Your Climate App
 
