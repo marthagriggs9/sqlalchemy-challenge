@@ -33,11 +33,17 @@ session = Session(engine)
 ```ruby
 session.query(measurement.date).order_by(measurement.date.desc()).first()
 ```
-2. Using that date, get the previous 12 months of preceipitation data by querying the previous 12 months of data (without using the date as a variable).
+2. Using that date, get the previous 12 months of preceipitation data by querying the previous 12 months of data.
    - Select only the 'date' and 'prcp' values.
 ```ruby
+last_date = dt.date.fromisoformat(last_date_row[0])
+# Calculate the date one year from the last date in data set.
+query_date = last_date - dt.timedelta(days=365)
+print("Query Date: ", query_date)
+
+#Perform a query to retrieve the data and precipitation scores
 precipitation_query = []
-precipitation_query = session.query(measurement.date, measurement.prcp).filter(measurement.date >= '2016-08-23').all()
+precipitation_query = session.query(measurement.date, measurement.prcp).filter(measurement.date >= query_date).all()
 ```
 3. Load the query results into a Pandas DataFrame and set the index to the 'date' column. 
    - Sort the DataFrame values by 'date'. 
@@ -66,7 +72,7 @@ plt.legend(fontsize=18, loc="upper right")
 ```
 ![image](https://user-images.githubusercontent.com/115905663/223168077-36144a97-b170-476c-9b3c-91abc51434f8.png)
 
-5. Use Pandas to print the sumamry statistics for the precipitation data. 
+5. Use Pandas to print the summary statistics for the precipitation data. 
 ```ruby
 precipitation_df.describe()
 ``` 
@@ -100,7 +106,7 @@ filter(measurement.station == 'USC00519281').all()
 ```ruby
 temperature_results = session.query(measurement.tobs).\
 filter(measurement.station == 'USC00519281').\
-filter(measurement.date.between('2016-08-23', '2017-0823')).all()
+filter(measurement.date >= query_date).all()
 #Save results to a dataframe that will be used to make the histogram
 temperature_df = pd.DataFrame(temperature_results, columns=['tobs'])
 print(temperature_df)
@@ -145,7 +151,7 @@ session = Session(engine)
 #################################################
 app = Flask(__name__)
 ```
-###### Flasy Routes
+###### Flask Routes
 
 1. `/` 
    - Start at the homepage.
@@ -175,10 +181,13 @@ as the value.
 @app.route("/api/v1.0/precipitation")
 
 def precipitation():
-   precipitation = session.query(measurement.date, measurement.prcp).\
-    filter(measurement.date >= '2016-08-23').all()
-   precip = {date: prcp for date, prcp in precipitation}
-   return jsonify(precip)
+    last_date_row = session.query(measurement.date).order_by(measurement.date.desc()).first()
+    last_date = dt.date.fromisoformat(last_date_row[0])
+    query_date = last_date - dt.timedelta(days=365)
+    precipitation = session.query(measurement.date, measurement.prcp).\
+        filter(measurement.date >= query_date).all()
+    precip = {date: prcp for date, prcp in precipitation}
+    return jsonify(precip)
 ```
 ![image](https://user-images.githubusercontent.com/115905663/223177776-ccbed671-10fe-444e-aef4-2a94ed70090e.png)
 
@@ -201,9 +210,12 @@ def stations():
 @app.route("/api/v1.0/tobs")
 
 def temp_monthly():
+    last_date_row = session.query(measurement.date).order_by(measurement.date.desc()).first()
+    last_date = dt.date.fromisoformat(last_date_row[0])
+    query_date = last_date - dt.timedelta(days=365)
     results = session.query(measurement.tobs).\
-      filter(measurement.station == 'USC00519281').\
-      filter(measurement.date.between('2016-08-23', '2017-0823')).all()
+        filter(measurement.station == 'USC00519281').\
+        filter(measurement.date >= query_date).all()
     temps = list(np.ravel(results))
     return jsonify(temps=temps)
 ```
