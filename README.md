@@ -151,7 +151,7 @@ session = Session(engine)
 #################################################
 app = Flask(__name__)
 ```
-###### Flasy Routes
+###### Flask Routes
 
 1. `/` 
    - Start at the homepage.
