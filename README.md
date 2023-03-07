@@ -72,7 +72,7 @@ plt.legend(fontsize=18, loc="upper right")
 ```
 ![image](https://user-images.githubusercontent.com/115905663/223168077-36144a97-b170-476c-9b3c-91abc51434f8.png)
 
-5. Use Pandas to print the sumamry statistics for the precipitation data. 
+5. Use Pandas to print the summary statistics for the precipitation data. 
 ```ruby
 precipitation_df.describe()
 ``` 
