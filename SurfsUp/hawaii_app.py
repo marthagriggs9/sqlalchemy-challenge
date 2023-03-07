@@ -13,7 +13,7 @@ from flask import Flask, jsonify
 #################################################
 # Database Setup
 #################################################
-engine = create_engine("sqlite:///../Resources/hawaii.sqlite")
+engine = create_engine("sqlite:///../Resources/hawaii.sqlite",connect_args={'check_same_thread': False})
 
 # reflect an existing database into a new model
 Base = automap_base()
@@ -108,3 +108,4 @@ def stats(start=None, end=None):
 
 if __name__ == '__main__':
     app.run(debug=True)
+    
